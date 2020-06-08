@@ -2,18 +2,6 @@
 #include "Missile.h"
 #include "../Scene.h"
 
-//コンストラクタ
-Aircraft::Aircraft()
-{
-
-}
-
-//デストラクタ
-Aircraft::~Aircraft()
-{
-	Release();
-}
-
 void Aircraft::Deserialize()
 {
 	m_pModel = new kdModel();
@@ -41,17 +29,6 @@ void Aircraft::Update()
 	UpdateMove();
 
 	UpdateShoot();
-
-	
-}
-
-//描画
-void Aircraft::Draw()
-{
-	if (m_pModel == nullptr) { return; }
-
-	SHADER.m_standardShader.SetWorldMatrix(m_mWorld);
-	SHADER.m_standardShader.DrawMesh(m_pModel->GetMesh(), m_pModel->GetMaterials());
 
 	
 }
@@ -137,7 +114,7 @@ void Aircraft::UpdateShoot()
 				pMissile->Deserialize();
 				pMissile->SetMatrix(m_mWorld);
 
-				Scene::GetInstance().AddMissile(pMissile);
+				Scene::GetInstance().AddObject(pMissile);
 			}
 			m_canShoot = false;
 		}
@@ -166,15 +143,5 @@ void Aircraft::ImGuiUpdate()
 		}
 
 		ImGui::TreePop();
-	}
-}
-
-//開放
-void Aircraft::Release()
-{
-	if (m_pModel)
-	{
-		delete m_pModel;
-		m_pModel = nullptr;
 	}
 }

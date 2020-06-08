@@ -3,9 +3,7 @@
 #include "EditorCamera.h"
 
 //前方宣言
-class StageObject;
-class Aircraft;
-class Missile;
+class GameObject;
 
 class Scene
 {
@@ -23,7 +21,7 @@ public:
 	void Update();
 	void Draw();
 
-	void AddMissile(Missile* pMissile);
+	void AddObject(GameObject* pObject);
 
 	void ImGuiUpdate();
 
@@ -42,11 +40,9 @@ private:
 
 	kdModel       m_sky;//スカイスフィア
 	EditorCamera  m_camera;
-	StageObject*  m_pGround = nullptr;//ステージの地面
-	Aircraft*     m_pAircraft = nullptr;//飛行機
 	bool          m_edtorCameraEnable = true;
 
-	std::list<Missile*> m_missiles;
+	std::list<GameObject*> m_objects;
 
 	//デバックライン描画用の頂点配列
 	std::vector<KdEffectShader::Vertex> m_debugLines;

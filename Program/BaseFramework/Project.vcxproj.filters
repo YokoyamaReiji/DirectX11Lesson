@@ -159,6 +159,9 @@
     <ClInclude Include="Src\Application\GAME\Shooting\Missile.h">
       <Filter>Src\Application\GAME\Shooting</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\GAME\GameObject.h">
+      <Filter>Src\Application\GAME</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -238,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\GAME\Shooting\Missile.cpp">
       <Filter>Src\Application\GAME\Shooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\GAME\GameObject.cpp">
+      <Filter>Src\Application\GAME</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
