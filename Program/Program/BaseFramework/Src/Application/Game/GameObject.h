@@ -18,7 +18,7 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	virtual void Deserialize();	//初期化
+	virtual void Deserialize(const json11::Json& jsonObj);	//初期化
 	virtual void Update();		//更新
 	virtual void Draw();		//描画
 
@@ -50,6 +50,7 @@ protected:
 	bool	 m_alive = true;
 
 	UINT   m_tag = OBJECT_TAG::TAG_None;
+	std::string m_name = "GameObject";
 
 };
 

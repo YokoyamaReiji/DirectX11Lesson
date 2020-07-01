@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "../Component/CameraComponent.h"
 
-#include "Shooting/StageObject.h"
 #include "EditorCamera.h"
 #include "Shooting/Aircraft.h"
 #include "Shooting/Missile.h"
@@ -23,6 +22,65 @@ Scene::~Scene()
 //初期化
 void Scene::Init() 
 {
+
+	//jsonファイルを開く
+	std::ifstream ifs("Data/test.json");
+	if (ifs.fail()) { assert(0 && "jsonのファイルのパスが間違っています"); }
+
+	//文字列として全読み込み
+	std::string strjson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+	//文字列もjsonを解析する
+	std::string err;
+	json11::Json jsonObj = json11::Json::parse(strjson, err);
+	if (err.size() > 0) { assert(0 && "読み込んだファイルのjson変換に失敗"); }
+
+	//値アクセス
+	{
+		OutputDebugStringA(jsonObj["Name"].string_value().append("\n").c_str());
+		OutputDebugStringA(std::to_string(jsonObj["Hp"].int_value()).append("\n").c_str());
+	}
+
+	//配列アクセス
+	{
+		auto& pos = jsonObj["Position"].array_items();
+		for (auto&& p : pos)
+		{
+			OutputDebugStringA(std::to_string(p.number_value()).append("\n").c_str());
+		}
+		//配列添字アクセス
+		OutputDebugStringA(std::to_string(pos[0].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(pos[1].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(pos[2].number_value()).append("\n").c_str());
+	}
+
+	//Object取得
+	{
+		auto& object = jsonObj["monster"].object_items();
+		OutputDebugStringA(object["name"].string_value().append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["hp"].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["pos"][0].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["pos"][1].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["pos"][2].number_value()).append("\n").c_str());
+	}
+
+	//Object配列取得
+	{
+		auto& objects = jsonObj["techniques"].array_items();
+		for (auto&& object : objects)
+		{
+			OutputDebugStringA(object["name"].string_value().append("\n").c_str());
+			OutputDebugStringA(std::to_string(object["atk"].int_value()).append("\n").c_str());
+			OutputDebugStringA(std::to_string(object["hitrate"].number_value()).append("\n").c_str());
+
+			//固有のパラメータはチェックしてからアクセス
+			if (object["effect"].is_string())
+			{
+				OutputDebugStringA(object["effect"].string_value().append("\n").c_str());
+			}
+		}
+	}
+
 	m_spSky = KdResouceFactory::GetInstance().GetModel("Data/StageMap/StageMap.gltf");
 
 	Deserialize();
@@ -30,18 +88,17 @@ void Scene::Init()
 
 void Scene::Deserialize()
 {
-	std::shared_ptr<StageObject> spGround = std::make_shared<StageObject>();
+	std::shared_ptr<GameObject> spGround = std::make_shared<GameObject>();
 	if (spGround)
 	{
-		spGround->Deserialize();
+		spGround->Deserialize(KdLoadJson("Data/Scene/StageMap.json"));
 		m_Objects.push_back(spGround);
 	}
 
 	std::shared_ptr<Aircraft> spAircraft = std::make_shared<Aircraft>();
 	if (spAircraft)
 	{
-		spAircraft->SetTag(OBJECT_TAG::TAG_Player);
-		spAircraft->Deserialize();
+		spAircraft->Deserialize(KdLoadJson("Data/Scene/Aircraft.json"));
 		m_Objects.push_back(spAircraft);
 	}
 }

@@ -2,14 +2,18 @@
 #include "Application/main.h"
 #include "../../Component/ModelComponent.h"
 
-void Missile::Deserialize()
+void Missile::Deserialize(const json11::Json& jsonObj)
 {
-	if (m_spModelComponent)
-	{
-		m_spModelComponent->SetModel(KdResFac.GetModel("Data/StageMap/StageMap.gltf"));
-	}
-
 	m_lifeSpan = APP.m_maxFps * 10;
+
+	if (jsonObj.is_null() == false){return;}
+
+	GameObject::Deserialize(jsonObj);
+
+	if (jsonObj["Speed"].is_null() == false)
+	{
+		m_speed = jsonObj["Speed"].number_value();
+	}
 }
 
 void Missile::Update()

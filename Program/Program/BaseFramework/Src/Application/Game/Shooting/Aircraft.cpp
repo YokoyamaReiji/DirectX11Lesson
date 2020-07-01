@@ -5,15 +5,10 @@
 #include "../../Component/InputComponent.h"
 #include "../../Component/ModelComponent.h"
 
-void Aircraft::Deserialize()
+void Aircraft::Deserialize(const json11::Json& jsonObj)
 {
-	if (m_spModelComponent)
-	{
-		m_spModelComponent->SetModel(KdResFac.GetModel("Data/StageMap/StageMap.gltf"));
-	}
-
-	//初期位置を地面から少し浮いた位置にセット
-	m_mWorld.CreateTranslation(0.0f, 5.0f, 0.0f);
+	GameObject::Deserialize(jsonObj);
+	
 	if (m_spCameraComponent)
 	{
 		m_spCameraComponent->OffseMatrix().CreateTranslation(0.0f, 1.5f, -10.0f);
@@ -105,7 +100,7 @@ void Aircraft::UpdateShoot()
 
 			if (spMissile) 
 			{
-				spMissile->Deserialize();
+				spMissile->Deserialize(KdLoadJson("Data/Scene/Missile.json"));
 				spMissile->SetMatrix(m_mWorld);
 
 				Scene::GetInstance().AddObject(spMissile);
