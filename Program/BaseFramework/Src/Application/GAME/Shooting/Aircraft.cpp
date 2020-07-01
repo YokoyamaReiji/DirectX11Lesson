@@ -29,8 +29,6 @@ void Aircraft::Update()
 	UpdateMove();
 
 	UpdateShoot();
-
-	
 }
 
 void Aircraft::SetCameraToShader()

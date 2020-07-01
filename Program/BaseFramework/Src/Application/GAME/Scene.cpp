@@ -172,11 +172,6 @@ void Scene::ImGuiUpdate()
 		//ImGui::Text(u8"今日はいい天気だから\n飛行機の座標でも表示しようかな");
 		ImGui::Checkbox("EditorCamera", &m_edtorCameraEnable);
 
-		Aircraft* pAircraft = new Aircraft();
-		if (pAircraft)
-		{
-			pAircraft->ImGuiUpdate();
-		}
 	}
 
 	ImGui::End();
