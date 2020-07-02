@@ -4,6 +4,8 @@ class CameraComponent;
 class InputComponent;
 class ModelComponent;
 
+struct SphereInfo;
+
 //タグ定数
 enum OBJECT_TAG
 {
@@ -33,6 +35,8 @@ public:
 	//カメラコンポーネント取得
 	std::shared_ptr<CameraComponent> GetCameraComponent() { return m_spCameraComponent; }
 	
+	//球による当たり判定
+	bool HitCheckBySphere(const SphereInfo& rInfo);
 
 
 protected:
@@ -49,8 +53,17 @@ protected:
 	KdMatrix m_mWorld;
 	bool	 m_alive = true;
 
+	float m_colRadiud = 2.0f;
+
 	UINT   m_tag = OBJECT_TAG::TAG_None;
 	std::string m_name = "GameObject";
-
 };
 
+//クラス名からGameObjectを生成する関数
+std::shared_ptr<GameObject> CreateGameObject(const std::string& name);
+
+struct SphereInfo
+{
+	KdVec3 m_pos = {};
+	float m_radius = 0.0f;
+};

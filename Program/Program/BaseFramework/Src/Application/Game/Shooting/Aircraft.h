@@ -16,9 +16,13 @@ public:
 	void UpdateShoot(); //発射関数
 
 	void ImGuiUpdate(); //Aircraftのimgui更新
+
+	void UpdateCollision();//当たり判定処理
 private:
 	
 	float m_speed = 0.2f;	//移動スピード
 	bool m_canshoot = true;//発射可能かどうか
+
+	KdVec3 m_prevPos = {};//１フレーム前の座標
 };
 

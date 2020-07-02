@@ -84,3 +84,15 @@ public:
 	virtual void Update() override;
 
 };
+
+//=======================================
+//キーボード用入力コンポーネント
+//=======================================
+class EnemyInputComponent : public InputComponent
+{
+public:
+	EnemyInputComponent(GameObject& owner) : InputComponent(owner) {}
+
+	virtual void Update() override;
+
+};

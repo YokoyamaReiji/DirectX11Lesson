@@ -2,6 +2,7 @@
 #include "../Component/CameraComponent.h"
 #include "../Component/InputComponent.h"
 #include "../Component/ModelComponent.h"
+#include "Shooting/Aircraft.h"
 
 GameObject::GameObject()
 {
@@ -49,9 +50,9 @@ void GameObject::Deserialize(const json11::Json& jsonObj)
 	const std::vector<json11::Json>& rRot = jsonObj["Rot"].array_items();
 	if (rPos.size() == 3)
 	{
-		mTrans.CreateRotationX((float)rPos[0].number_value() * KdToRadians);
-		mTrans.RotateY((float)rPos[1].number_value() * KdToRadians);
-		mTrans.RotateZ((float)rPos[2].number_value() * KdToRadians);
+		mTrans.CreateRotationX((float)rRot[0].number_value() * KdToRadians);
+		mTrans.RotateY((float)rRot[1].number_value() * KdToRadians);
+		mTrans.RotateZ((float)rRot[2].number_value() * KdToRadians);
 	}
 	
 	//座標
@@ -75,7 +76,46 @@ void GameObject::Draw()
 	m_spModelComponent->Draw();
 }
 
+bool GameObject::HitCheckBySphere(const SphereInfo& rInfo)
+{
+	//当たっているとする距離の計算(お互いの半径を足した値)
+	float hitRange = rInfo.m_radius + m_colRadiud;
+
+	//自分の座標ベクトル
+	KdVec3 myPos = m_mWorld.GetTranslation();
+
+	//2点間のベクトルを計算
+	KdVec3 betweenVec = rInfo.m_pos - myPos;
+
+	//２点間の距離の計算
+	float distance = betweenVec.Lenght();
+
+	bool isHit = false;
+	if (distance <= hitRange)
+	{
+		isHit = true;
+	}
+
+	return isHit;
+}
+
 void GameObject::Release()
 {
 	
+}
+
+std::shared_ptr<GameObject> CreateGameObject(const std::string& name)
+{
+	if (name == "GameObject")
+	{
+		return std::make_shared<GameObject>();
+	}
+	else if (name == "Aircraft")
+	{
+		return std::make_shared<Aircraft>();
+	}
+
+	//文字列が既存のクラスに一致しなかった
+	assert(0 && "存在しないGameObjectクラスです");
+	return nullptr;
 }

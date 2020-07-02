@@ -101,6 +101,13 @@ void Scene::Deserialize()
 		spAircraft->Deserialize(KdLoadJson("Data/Scene/Aircraft.json"));
 		m_Objects.push_back(spAircraft);
 	}
+
+	std::shared_ptr<Aircraft> spEnemyAircraft = std::make_shared<Aircraft>();
+	if (spAircraft)
+	{
+		spAircraft->Deserialize(KdLoadJson("Data/Scene/Enemy.json"));
+		m_Objects.push_back(spAircraft);
+	}
 }
 
 
@@ -213,6 +220,12 @@ void Scene::Draw()
 		//Zバッファ使用ON・書き込みON
 		D3D.GetDevContext()->OMSetDepthStencilState(SHADER.m_ds_ZEnable_ZWriteEnable, 0);
 	}
+}
+
+void Scene::LoadScene(const std::string& sceneFilename)
+{
+	//GameObjectリストを空にする
+	m_Objects.clear();
 }
 
 void Scene::AddObject(std::shared_ptr<GameObject>spObject)
