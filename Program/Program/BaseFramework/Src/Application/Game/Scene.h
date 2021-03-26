@@ -19,14 +19,16 @@ public:
 
 	void Init();	//初期化
 	void Deserialize();
+
+	//シーン変更のリクエストを受付
+	void RequestChangeScene(const std::string& fileName);
+
 	void Release();	//解放
 	void Update();	//更新
 	void Draw();	//描画
 
 	//GameObjectのリストを返す
-	const std::list<std::shared_ptr<GameObject>> GetObjects()const { return m_Objects; }
-
-	void LoadScene(const std::string& sceneFilename);
+	const std::list<std::shared_ptr<GameObject>> GetObjects()const { return m_spObjects; }
 
 	void AddObject(std::shared_ptr<GameObject> spObject);
 
@@ -45,17 +47,29 @@ public:
 private:
 	Scene();	//コンストラクタ
 
+	void LoadScene(const std::string& sceneFilename);
+
+	void ExecChangeScene();				//シーンを実際に変更するところ
+	void Reset();						//シーンをまたぐときにリセットする処理
+
+	std::string m_nextSceneFileName = ""; //次のシーンのjsonファイル名
+	bool m_isRequestChangeScene = false;  //シーン移動のリクエストがあったかどうか
+
 	std::shared_ptr<KdModel> m_spSky = nullptr;						//スカイスフィア
 	std::shared_ptr<EditorCamera> m_spCamera = nullptr;
 
 	bool		  m_editorCameraEnable = true;
 
-	std::list<std::shared_ptr<GameObject>> m_Objects;
+	std::list<std::shared_ptr<GameObject>> m_spObjects;
+
+	//Imguiで選択されたオブジェクト
+	std::weak_ptr<GameObject>  m_wpImguiSelectObj;
 
 	//ターゲットカメラ
 	std::weak_ptr<CameraComponent> m_wpTargetCamera;
 
 	//デバックライン描画用の頂点配列
 	std::vector<KdEffectShader::Vertex> m_debugLines;
+
 };
 

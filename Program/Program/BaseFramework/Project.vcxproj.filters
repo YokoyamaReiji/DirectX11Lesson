@@ -55,6 +55,9 @@
     <Filter Include="Library\json11KdCustom">
       <UniqueIdentifier>{b09cd704-5938-4ef2-ada5-041064d766fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Game\Action">
+      <UniqueIdentifier>{39d671cd-90bd-4e38-b817-d2cca3eb37a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -180,6 +183,30 @@
     <ClInclude Include="..\Library\json11KdCustom\json11.hpp">
       <Filter>Library\json11KdCustom</Filter>
     </ClInclude>
+    <ClInclude Include="Src\System\Math\KdCollision.h">
+      <Filter>Src\System\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Game\Shooting\EffectObject.h">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\System\Direct3D\KdSquarePolygon.h">
+      <Filter>Src\System\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Game\Shooting\AnimationEffect.h">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\System\Direct3D\KdTrailPolygon.h">
+      <Filter>Src\System\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Game\GameProcess.h">
+      <Filter>Src\Application\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Game\Shooting\ShootingGaameProcess.h">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Game\Action\ActionGameProcess.h">
+      <Filter>Src\Application\Game\Action</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -274,6 +301,27 @@
     </ClCompile>
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp">
       <Filter>Library\json11KdCustom</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\System\Math\KdCollision.cpp">
+      <Filter>Src\System\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Game\Shooting\EffectObject.cpp">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\System\Direct3D\KdSquarePolygon.cpp">
+      <Filter>Src\System\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Game\Shooting\AnimationEffect.cpp">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\System\Direct3D\KdTrailPolygon.cpp">
+      <Filter>Src\System\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Game\Shooting\ShootingGaameProcess.cpp">
+      <Filter>Src\Application\Game\Shooting</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Game\Action\ActionGameProcess.cpp">
+      <Filter>Src\Application\Game\Action</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

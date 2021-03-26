@@ -6,6 +6,8 @@
 #include "Shooting/Aircraft.h"
 #include "Shooting/Missile.h"
 
+#include "Shooting//AnimationEffect.h"
+
 
 //コンストラクタ
 Scene::Scene() 
@@ -81,40 +83,67 @@ void Scene::Init()
 		}
 	}
 
-	m_spSky = KdResouceFactory::GetInstance().GetModel("Data/StageMap/StageMap.gltf");
+	//m_spSky = KdResouceFactory::GetInstance().GetModel("Data/StageMap/StageMap.gltf");
+
+	//LoadScene("Data/Scene/ShootingGame.json");
+	LoadScene("Data/Scene/ActionGame.json");
 
 	Deserialize();
 }
 
-void Scene::Deserialize()
+//シーンをまたぐときにリセットする処理
+void Scene::Reset()
 {
-	std::shared_ptr<GameObject> spGround = std::make_shared<GameObject>();
-	if (spGround)
+	m_spObjects.clear();			//メインのリストをクリア
+	m_wpImguiSelectObj.reset();		//ImGuiが選んでいるオブジェクトをクリア
+	m_wpTargetCamera.reset();		//カメラのターゲットになっているキャラクターのリセット
+	m_spSky = nullptr;				//空のクリア
+}
+
+void Scene::LoadScene(const std::string& sceneFilename)
+{
+	//各項目のクリア
+	Reset();
+
+	//json読み込み
+	json11::Json json = KdResFac.GetJSON(sceneFilename);
+	if (json.is_null())
 	{
-		spGround->Deserialize(KdLoadJson("Data/Scene/StageMap.json"));
-		m_Objects.push_back(spGround);
+		assert(0 && "[LoadScene]jsonファイル読み込み失敗");
+		return;
 	}
 
-	std::shared_ptr<Aircraft> spAircraft = std::make_shared<Aircraft>();
-	if (spAircraft)
-	{
-		spAircraft->Deserialize(KdLoadJson("Data/Scene/Aircraft.json"));
-		m_Objects.push_back(spAircraft);
-	}
+	//オブジェクトリスト取得
+	auto& objectDataList = json["GameObjects"].array_items();
 
-	std::shared_ptr<Aircraft> spEnemyAircraft = std::make_shared<Aircraft>();
-	if (spAircraft)
+	//オブジェクト生成ループ
+	for (auto&& objJsonData : objectDataList)
 	{
-		spAircraft->Deserialize(KdLoadJson("Data/Scene/Enemy.json"));
-		m_Objects.push_back(spAircraft);
+		//オブジェクト作成
+		auto newGameObj = CreateGameObject(objJsonData["ClassName"].string_value());
+
+		//プレハブ指定ありの場合は、プレハブ側のものをベースにこのJSONをマージする
+		KdMergePrefab(objJsonData);
+
+		//オブジェクトのデシリアライズ
+		newGameObj->Deserialize(objJsonData);
+
+		//リストへ追加
+		AddObject(newGameObj);
 	}
 }
 
+void Scene::Deserialize()
+{
+	std::shared_ptr<AnimationEffect> spExp = std::make_shared<AnimationEffect>();
+	spExp->SetAnimationInfo(KdResFac.GetTexture("Data/Texture/Explosion00.png"), 10.0f, 5, 5, 0.0f);
+	AddObject(spExp);
+}
 
 //解放
 void Scene::Release() 
 {
-	m_Objects.clear();
+	m_spObjects.clear();
 }
 
 //更新
@@ -126,21 +155,31 @@ void Scene::Update()
 		m_spCamera->Update();
 	}
 
-	for (auto spObject : m_Objects)
+	
+	auto selectObject = m_wpImguiSelectObj.lock();
+
+	for (auto spObject : m_spObjects)
 	{
+		if (spObject == selectObject) { continue; }
 		spObject->Update();
 	}
 
-	for (auto spObjectItr = m_Objects.begin(); spObjectItr != m_Objects.end();)
+	for (auto spObjectItr = m_spObjects.begin(); spObjectItr != m_spObjects.end();)
 	{
 		if((*spObjectItr)->IsAlive() == false)
 		{
-			spObjectItr = m_Objects.erase(spObjectItr);
+			spObjectItr = m_spObjects.erase(spObjectItr);
 		}
 		else 
 		{
 			++spObjectItr;
 		}
+	}
+
+	//シーン移動のリクエストがあった場合、変更する
+	if (m_isRequestChangeScene)
+	{
+		ExecChangeScene();
 	}
 }
 
@@ -184,17 +223,35 @@ void Scene::Draw()
 	//モデルの描画(メッシュの情報とマテリアルの情報を渡す)
 	if (m_spSky)
 	{
-		SHADER.m_effectShader.DrawMesh(m_spSky->GetMesh().get(), m_spSky->GetMaterials());
+		SHADER.m_effectShader.DrawMesh(m_spSky->GetMesh(0).get(), m_spSky->GetMaterials());
 	}
+
 	//不透明描画
 	SHADER.m_standardShader.SetToDevice();
 
-	
-
-	for (auto spObject : m_Objects)
+	for (auto spObject : m_spObjects)
 	{
 		spObject->Draw();
 	}
+
+	//半透明描画
+	SHADER.m_effectShader.SetToDevice();
+	SHADER.m_effectShader.SetTexture(D3D.GetWhiteTex()->GetSRView());
+
+	//Z情報は使うが、Z書き込みOff
+	D3D.GetDevContext()->OMSetDepthStencilState(SHADER.m_ds_ZEnable_ZWriteDisable, 0);
+	//カリングなし（両面描画）
+	D3D.GetDevContext()->RSSetState(SHADER.m_rs_CullNone);
+
+	for (auto spObj : m_spObjects)
+	{
+		spObj->DrawEffect();
+	}
+
+	//Z書き込みON
+	D3D.GetDevContext()->OMSetDepthStencilState(SHADER.m_ds_ZEnable_ZWriteEnable, 0);
+	//カリングあり（表面のみ描画）
+	D3D.GetDevContext()->RSSetState(SHADER.m_rs_CullBack);
 
 	//デバックライン描画
 	SHADER.m_effectShader.SetToDevice();
@@ -222,31 +279,70 @@ void Scene::Draw()
 	}
 }
 
-void Scene::LoadScene(const std::string& sceneFilename)
-{
-	//GameObjectリストを空にする
-	m_Objects.clear();
-}
-
 void Scene::AddObject(std::shared_ptr<GameObject>spObject)
 {
 	if (spObject == nullptr) { return; }
 
-	m_Objects.push_back(spObject);
+	m_spObjects.push_back(spObject);
 }
 
+//ImGui更新===================================================-
 void Scene::ImGuiUpdate()
 {
+	auto selectObject = m_wpImguiSelectObj.lock();
+
 	if (ImGui::Begin("Scene")) 
 	{
 		ImGui::Checkbox("EditorCameraEnable", &m_editorCameraEnable);
+
+		//オブジェクトリストの描画
+		if (ImGui::CollapsingHeader("Object List"), ImGuiTreeNodeFlags_DefaultOpen)
+		{
+			for (auto&& rObj : m_spObjects)
+			{
+				//選択オブジェクトと一致するオブジェクトかどうか
+				bool selected = (rObj == selectObject);
+				
+				ImGui::PushID(rObj.get());
+				if (ImGui::Selectable(rObj->GetName(), selected))
+				{
+					m_wpImguiSelectObj = rObj;
+				}
+				ImGui::PopID();
+			}
+		}
+	}
+
+	//インスペクターウィンド
+	if (ImGui::Begin("Inspector"))
+	{
+		if (selectObject)
+		{
+			//オブジェクトリストで選択したゲームオブジェクトの情報を描画
+			selectObject->ImGuiUpdate();
+		}
 	}
 
 	ImGui::End();
-
 }
 
-//デバックライン描画
+//シーン変更のリクエストを受付
+void Scene::RequestChangeScene(const std::string& fileName)
+{
+	m_nextSceneFileName = fileName;
+
+	m_isRequestChangeScene = true;
+}
+
+//シーンを実際に変更するところ
+void Scene::ExecChangeScene()
+{
+	LoadScene(m_nextSceneFileName);
+
+	m_isRequestChangeScene = false;
+}
+
+//デバックライン描画====================================================
 void Scene::AddDebugLine(const Math::Vector3& p1, const Math::Vector3& p2, const Math::Color& color) 
 {
 	//ラインの開始頂点

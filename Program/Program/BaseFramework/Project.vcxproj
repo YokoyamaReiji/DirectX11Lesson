@@ -158,19 +158,27 @@
     <ClInclude Include="Src\Application\Component\CameraComponent.h" />
     <ClInclude Include="Src\Application\Component\InputComponent.h" />
     <ClInclude Include="Src\Application\Component\ModelComponent.h" />
+    <ClInclude Include="Src\Application\Game\Action\ActionGameProcess.h" />
     <ClInclude Include="Src\Application\Game\EditorCamera.h" />
     <ClInclude Include="Src\Application\Game\GameObject.h" />
+    <ClInclude Include="Src\Application\Game\GameProcess.h" />
     <ClInclude Include="Src\Application\Game\Scene.h" />
     <ClInclude Include="Src\Application\Game\Shooting\Aircraft.h" />
+    <ClInclude Include="Src\Application\Game\Shooting\AnimationEffect.h" />
+    <ClInclude Include="Src\Application\Game\Shooting\EffectObject.h" />
     <ClInclude Include="Src\Application\Game\Shooting\Missile.h" />
+    <ClInclude Include="Src\Application\Game\Shooting\ShootingGaameProcess.h" />
     <ClInclude Include="Src\Application\main.h" />
     <ClInclude Include="src\System\Direct3D\KdDirect3D.h" />
     <ClInclude Include="Src\System\Direct3D\KdGLTFLoader.h" />
     <ClInclude Include="src\System\Direct3D\KdBuffer.h" />
     <ClInclude Include="src\System\Direct3D\KdMesh.h" />
     <ClInclude Include="Src\System\Direct3D\KdModel.h" />
+    <ClInclude Include="Src\System\Direct3D\KdSquarePolygon.h" />
     <ClInclude Include="src\System\Direct3D\KdTexture.h" />
     <ClInclude Include="src\Pch.h" />
+    <ClInclude Include="Src\System\Direct3D\KdTrailPolygon.h" />
+    <ClInclude Include="Src\System\Math\KdCollision.h" />
     <ClInclude Include="Src\System\Math\KdMath.h" />
     <ClInclude Include="Src\System\Shader\EffectShader\KdEffectShader.h" />
     <ClInclude Include="Src\System\Shader\KdShaderManager.h" />
@@ -193,22 +201,29 @@
     <ClCompile Include="Src\Application\Component\CameraComponent.cpp" />
     <ClCompile Include="Src\Application\Component\InputComponent.cpp" />
     <ClCompile Include="Src\Application\Component\ModelComponent.cpp" />
+    <ClCompile Include="Src\Application\Game\Action\ActionGameProcess.cpp" />
     <ClCompile Include="Src\Application\Game\EditorCamera.cpp" />
     <ClCompile Include="Src\Application\Game\GameObject.cpp" />
     <ClCompile Include="Src\Application\Game\Scene.cpp" />
     <ClCompile Include="Src\Application\Game\Shooting\Aircraft.cpp" />
+    <ClCompile Include="Src\Application\Game\Shooting\AnimationEffect.cpp" />
+    <ClCompile Include="Src\Application\Game\Shooting\EffectObject.cpp" />
     <ClCompile Include="Src\Application\Game\Shooting\Missile.cpp" />
+    <ClCompile Include="Src\Application\Game\Shooting\ShootingGaameProcess.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />
     <ClCompile Include="src\System\Direct3D\KdDirect3D.cpp" />
     <ClCompile Include="Src\System\Direct3D\KdGLTFLoader.cpp" />
     <ClCompile Include="src\System\Direct3D\KdBuffer.cpp" />
     <ClCompile Include="src\System\Direct3D\KdMesh.cpp" />
     <ClCompile Include="Src\System\Direct3D\KdModel.cpp" />
+    <ClCompile Include="Src\System\Direct3D\KdSquarePolygon.cpp" />
     <ClCompile Include="src\System\Direct3D\KdTexture.cpp" />
     <ClCompile Include="src\Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Src\System\Direct3D\KdTrailPolygon.cpp" />
+    <ClCompile Include="Src\System\Math\KdCollision.cpp" />
     <ClCompile Include="Src\System\Shader\EffectShader\KdEffectShader.cpp" />
     <ClCompile Include="Src\System\Shader\KdShaderManager.cpp" />
     <ClCompile Include="Src\System\Shader\SpriteShader\KdSpriteShader.cpp" />

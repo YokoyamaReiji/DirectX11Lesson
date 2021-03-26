@@ -4,6 +4,21 @@
 class KdVec3 : public DirectX::XMFLOAT3
 {
 public:
+
+	//指定行列でVectorを追加する
+	KdVec3& TransformCoord(const DirectX::XMMATRIX& m)
+	{
+		*this = XMVector3TransformCoord(*this, m);
+		return *this;
+	}
+
+	//指定（回転）行列でVectorを変換する
+	KdVec3& TransformNormal(const DirectX::XMMATRIX& m)
+	{
+		*this = XMVector3TransformNormal(*this, m);
+		return *this;
+	}
+
 	//デフォルトコンストラクタは座標の０クリアを行う
 	KdVec3()
 	{
@@ -51,7 +66,7 @@ public:
 	}
 
 	//ベクトルの長さ
-	float Lenght() const 
+	float Length() const 
 	{
 		return DirectX::XMVector3Length(*this).m128_f32[0];
 	}
@@ -61,6 +76,20 @@ public:
 	{
 		return DirectX::XMVector3LengthSq(*this).m128_f32[0];
 	}
+
+	//内積
+	static float Dot(const KdVec3& v1, const KdVec3& v2)
+	{
+		return DirectX::XMVector3Dot(v1, v2).m128_f32[0];
+	}
+
+	//外積
+	static KdVec3 Cross(const KdVec3& v1, const KdVec3& v2)
+	{
+		return DirectX::XMVector3Cross(v1, v2);
+	}
+
+	inline void Complement(const KdVec3& vTo, float rot);
 
 };
 
@@ -125,6 +154,12 @@ public:
 		*this = DirectX::XMMatrixScaling(x, y, z);
 	}
 
+	//指定軸回転行列作成
+	void CreateRotetionAxis(const KdVec3& axis, float angle)
+	{
+		*this = DirectX::XMMatrixRotationAxis(axis, angle);
+	}
+
 	//透視影行列の作成
 	KdMatrix& CreateProjectionPerspectFov(float fovAngleY, float aspectRatio, float nearZ, float farZ)
 	{
@@ -133,6 +168,12 @@ public:
 	}
 
 	//操作============================================
+
+	//X軸回転
+	void RotateX(float angle)
+	{
+		*this *= DirectX::XMMatrixRotationX(angle);
+	}
 
 	//Z軸回転
 	void RotateZ(float angle) 
@@ -168,11 +209,33 @@ public:
 
 	//プロパティ======================================
 
+	//X軸取得
+	KdVec3 GetAxisX() const { return{ _11,_12,_13 }; }
+
+	//Y軸取得
+	KdVec3 GetAxisY() const { return{ _21,_22,_23 }; }
+
 	//Z軸取得
 	KdVec3 GetAxisZ() const { return{ _31,_32,_33 }; }
 
+	//X軸セット
+	void SetAxisX(const KdVec3& v)
+	{
+		_11 = v.x;
+		_12 = v.y;
+		_13 = v.z;
+	}
+
+	//Y軸セット
+	void SetAxisY(const KdVec3& v)
+	{
+		_21 = v.x;
+		_22 = v.y;
+		_23 = v.z;
+	}
+
 	//Z軸セット
-	void SetAxis(const KdVec3& v)
+	void SetAxisZ(const KdVec3& v)
 	{
 		_31 = v.x;
 		_32 = v.y;
@@ -190,6 +253,38 @@ public:
 		_43 = v.z;
 	}
 
+	//XYZの順番で合成したときの、回転速度を算出する
+	KdVec3 GetAngles() const
+	{
+		KdMatrix mat = *this;
+
+		//各軸を取得
+		KdVec3 axisX = mat.GetAxisX();
+		KdVec3 axisY = mat.GetAxisY();
+		KdVec3 axisZ = mat.GetAxisZ();
+
+		//各軸を正規化
+		axisX.Normalize();
+		axisY.Normalize();
+		axisZ.Normalize();
+
+		//マトリックスを正規化
+		mat.SetAxisX(axisX);
+		mat.SetAxisY(axisY);
+		mat.SetAxisZ(axisZ);
+
+		KdVec3 angles;
+		angles.x = atan2f(mat.m[1][2], mat.m[2][2]);
+		angles.y = atan2f(-mat.m[0][2], sqrtf(mat.m[1][2] * mat.m[2][2] * mat.m[2][2]));;
+		angles.z = atan2f(mat.m[0][1], mat.m[0][0]);
+
+		return angles;
+	}
+
+	inline void SetBillboard(const KdMatrix& mat)
+	{
+
+	}
 };
 
 inline KdMatrix operator* (const KdMatrix& M1, const KdMatrix& M2) 

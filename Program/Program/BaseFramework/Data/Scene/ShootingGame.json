@@ -1,17 +1,43 @@
 {
   "GameObjects": [
     {
+      "ClassName": "ShootingGameProcess",
+      "Name":  "GameProcess"
+    },
+    {
       "ClassName": "GameObject",
-      "Name": "StageMap",
-      "ModelFileName": "Data/StageMap/StageMap.gltf",
-      "Scale": [ 3, 1, 3 ]
+      "Prefab": "Data/Scene/StageMap.json",
+      "Name": "StageMap"
     },
     {
       "ClassName": "Aircraft",
-      "Name": "Player",
-      "ModelFileName": "Data/Aircraft/Aircraft_body.gltf",
+      "Prefab": "Data/Scene/Aircraft.json",
+      "Name": "Player"
+    },
+    {
+      "ClassName": "Aircraft",
+      "Name": "Enemy00",
+      "TAG": 16,
+      "ModelFileName": "Data/Aircraft/Aircraft_full.gltf",
       "Tag": 2,
-      "Pos": [ 0, 10, 0 ]
+      "Pos": [ 0, 5, 25 ]
+    },
+    {
+      "ClassName": "Aircraft",
+      "Name": "Enemy01",
+      "TAG": 16,
+      "ModelFileName": "Data/Aircraft/Aircraft_full.gltf",
+      "Tag": 2,
+      "Pos": [ -3, 10, 20 ],
+      "Rot": [ 0, 45, 0 ]
+    },
+    {
+      "ClassName": "Aircraft",
+      "Name": "Enemy02",
+      "ModelFileName": "Data/Aircraft/Aircraft_full.gltf",
+      "TAG": 16,
+      "Pos": [ 3, 15, 20 ],
+      "Rot": [ 0, -45, 0 ]
     }
   ]
 }

@@ -15,22 +15,38 @@ public:
 	void SetEnable(bool enable) { m_enable = enable; }
 
 	//モデル取得
-	inline const std::shared_ptr<KdModel>& GetModel() const { return m_spModel; }
+	const std::vector<KdModel::Node>& GetNodes() const { return m_coppiedNodes; }
+	//inline const std::shared_ptr<KdModel> GetModel() const { return m_spModel; }
 
 	//メッシュ取得
-	inline const std::shared_ptr<KdMesh> GetMesh()const
+	inline const std::shared_ptr<KdMesh> GetMesh(UINT index)const
 	{
-		if (m_spModel == nullptr) { return nullptr; }
-		return m_spModel->GetMesh();
+		if (index >= m_coppiedNodes.size()) { return nullptr; }
+		return m_coppiedNodes[index].m_spMesh;
+	}
+
+	inline KdModel::Node* FindNode(const std::string& name)
+	{
+		//コピーしたノードの中から検索をかける
+		for (auto&& node : m_coppiedNodes)
+		{
+			if (node.m_name == name)
+			{
+				return &node;
+			}
+		}
 	}
 
 	//モデルセット
-	inline void SetModel(const std::shared_ptr<KdModel>& model) { m_spModel = model; }
+	void SetModel(const std::shared_ptr<KdModel>& rModel);
 
 	//StanderdShaderで描画
 	void Draw();
 
 private:
+
+	//個別管理のため、オリジナルからコピーして保持する配列
+	std::vector<KdModel::Node> m_coppiedNodes;
 
 	//有効
 	bool m_enable = true;
